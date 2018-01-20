@@ -34,7 +34,7 @@ func (c *Client) search(query string, result interface{}) error {
 	}
 
 	// Check status code
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("query: %s", res.Status)
 	}
 
