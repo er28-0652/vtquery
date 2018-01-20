@@ -66,6 +66,9 @@ func (c *Client) search(query string, data interface{}) error {
 
 // HashQuery query the given hash to VirusTotal and returns the result as JSON
 func (c *Client) HashQuery(query string) (*HashQueryResult, error) {
+	if !IsValidHash(query) {
+		return nil, errors.New("invalid hash query")
+	}
 	var result []HashQueryResult
 	err := c.search(query, &result)
 	return &result[0], err
@@ -73,6 +76,9 @@ func (c *Client) HashQuery(query string) (*HashQueryResult, error) {
 
 // URLQuery query the given URL/IP to VirusTotal and returns the result as JSON
 func (c *Client) URLQuery(query string) (*URLQueryResult, error) {
+	if !IsValidURL(query) {
+		return nil, errors.New("invalid url query")
+	}
 	var result []URLQueryResult
 	err := c.search(query, &result)
 	return &result[0], err
