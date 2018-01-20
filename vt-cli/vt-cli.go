@@ -20,7 +20,7 @@ var (
 )
 
 func query(c *cli.Context) error {
-	vt := vtquery.DefaultClient()
+	vt := vtquery.NewDefaultClient()
 	query := c.String("query")
 	var result interface{}
 	var err error
