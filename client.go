@@ -96,6 +96,9 @@ func (c *Client) newRequest(method, spath string, ro *RequestOptions) (*http.Req
 		return nil, err
 	}
 
+	// Add User-Agent to Header
+	req.Header = c.DefaultHeader
+
 	// Add content-length if we have it
 	if ro.BodyLength > 0 {
 		req.ContentLength = ro.BodyLength
