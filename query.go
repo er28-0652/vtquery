@@ -45,19 +45,13 @@ func (c *Client) search(query string, result interface{}) error {
 }
 
 // HashQuery query the given hash to VirusTotal and returns the result as JSON
-func (c *Client) HashQuery(query string) (*HashQueryResult, error) {
-	var result HashQueryResult
-	if err := c.search(query, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
+func (c *Client) HashQuery(query string) (result *HashQueryResult, err error) {
+	err = c.search(query, result)
+	return result, err
 }
 
 // URLQuery query the given URL/IP to VirusTotal and returns the result as JSON
-func (c *Client) URLQuery(query string) (*URLQueryResult, error) {
-	var result URLQueryResult
-	if err := c.search(query, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
+func (c *Client) URLQuery(query string) (result *URLQueryResult, err error) {
+	err = c.search(query, result)
+	return result, err
 }
