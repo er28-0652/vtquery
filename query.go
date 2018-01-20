@@ -71,7 +71,10 @@ func (c *Client) HashQuery(query string) (*HashQueryResult, error) {
 	}
 	var result []HashQueryResult
 	err := c.search(query, &result)
-	return &result[0], err
+	if err != nil {
+		return nil, err
+	}
+	return &result[0], nil
 }
 
 // URLQuery query the given URL/IP to VirusTotal and returns the result as JSON
@@ -81,5 +84,8 @@ func (c *Client) URLQuery(query string) (*URLQueryResult, error) {
 	}
 	var result []URLQueryResult
 	err := c.search(query, &result)
-	return &result[0], err
+	if err != nil {
+		return nil, err
+	}
+	return &result[0], nil
 }
