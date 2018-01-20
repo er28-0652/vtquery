@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 func decodeBody(resp *http.Response, out interface{}) error {
@@ -24,18 +26,18 @@ func (c *Client) search(query string, result interface{}) error {
 
 	req, err := c.newRequest("GET", "/ui/search", ro)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "fail to create new request")
 	}
 
 	// Send HTTP request
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "fail to send request")
 	}
 
 	// Check status code
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("query: %s", res.Status)
+		return fmt.Errorf("%s; url=%s", res.Status, req.URL.String())
 	}
 
 	// Decode the response body as given type of JSON
