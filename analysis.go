@@ -146,11 +146,3 @@ type URLQueryResult struct {
 		Self string `json:"self"`
 	} `json:"links"`
 }
-
-func (hqr *HashQueryResult) Report() map[string]string {
-	return map[string]string{
-		"Md5":    hqr.Md5,
-		"SHA1":   hrq.Sha1,
-		"SHA256": hqr.Sha256,
-	}
-}
