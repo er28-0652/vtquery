@@ -2,26 +2,43 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"regexp"
 
+	"github.com/er28-0652/vtquery"
+	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
 
-func checkQueryType(query string) string {
+var (
 	// regexp for MD5, SHA1 and SHA256
-	hashPtn := regexp.MustCompile(`(^[a-fA-F0-9]{32}$|^[a-fA-F0-9]{40}$|^[a-fA-F0-9]{64}$)`)
+	hashPtn = regexp.MustCompile(`(^[a-fA-F0-9]{32}$|^[a-fA-F0-9]{40}$|^[a-fA-F0-9]{64}$)`)
 
 	// regexp for URL pattern
-	urlPtn := regexp.MustCompile(`^https?://.*`)
+	urlPtn = regexp.MustCompile(`^https?://.*`)
+)
 
-	if hashPtn.MatchString(query) == true {
-		return "hash"
-	} else if urlPtn.MatchString(query) == true {
-		return "url"
-	} else {
-		return ""
+func query(c *cli.Context) error {
+	vt := vtquery.DefaultClient()
+	query := c.String("query")
+	var result interface{}
+	var err error
+
+	switch {
+	case hashPtn.MatchString(query):
+		result, err = vt.HashQuery(query)
+	case urlPtn.MatchString(query):
+		result, err = vt.URLQuery(query)
+	default:
+		return errors.New("unknown query type")
 	}
+
+	if err != nil {
+		return errors.Wrap(err, "fail to query VT")
+	}
+	fmt.Printf("%#v\n", result)
+	return nil
 }
 
 func main() {
@@ -33,28 +50,11 @@ func main() {
 			Usage: "hash or url to query",
 		},
 	}
+	app.Action = query
 
-	app.Action = func(c *cli.Context) error {
-		vt := DefaultClient()
-		q := c.String("query")
-		t := checkQueryType(q)
-
-		var result interface{}
-		var err error
-		if t == "hash" {
-			result, err = vt.HashQuery(q)
-			if err != nil {
-				return err
-			}
-		} else if t == "url" {
-			result, err = vt.URLQuery(q)
-			if err != nil {
-				return err
-			}
-		}
-		fmt.Printf("%+v\n", result)
-		return nil
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
 	}
-	app.Run(os.Args)
 	return
 }
