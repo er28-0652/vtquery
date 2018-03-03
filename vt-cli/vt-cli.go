@@ -11,10 +11,12 @@ import (
 )
 
 func query(c *cli.Context) error {
-	vt := vtquery.NewDefaultClient()
+	vt, err := vtquery.NewDefaultClient()
+	if err != nil {
+		return err
+	}
 	query := c.String("query")
 	var result interface{}
-	var err error
 
 	switch {
 	case vtquery.IsValidHash(query):
