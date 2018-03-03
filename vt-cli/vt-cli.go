@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -16,7 +15,7 @@ func query(c *cli.Context) error {
 		return err
 	}
 	query := c.String("query")
-	var result interface{}
+	var result vtquery.QueryResult
 
 	switch {
 	case vtquery.IsValidHash(query):
@@ -30,7 +29,7 @@ func query(c *cli.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "fail to query VT")
 	}
-	fmt.Printf("%#v\n", result)
+	result.ShowReport()
 	return nil
 }
 
