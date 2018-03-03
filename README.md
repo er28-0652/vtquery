@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/er28-0652/vtquery.svg?branch=master)](https://travis-ci.org/er28-0652/vtquery)
+
 vtquery
 ===
 `vtquery` is VirusTotal query library that doesn't use official API.  
