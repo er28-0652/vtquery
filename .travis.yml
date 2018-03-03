@@ -14,7 +14,7 @@ before_deploy:
 
 deploy:
   provider: script
-  script: ghr --username er28-0652 --token $GITHUB_TOKEN --replace --debug $(git tag -l --contains HEAD) dist/
+  script: ghr --username er28-0652 --token $GITHUB_TOKEN --replace --debug $(git tag -l --contains HEAD) dist/$TRAVIS_TAG
   skip_cleanup: true
   on:
     tags: true
