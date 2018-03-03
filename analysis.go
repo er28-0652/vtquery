@@ -1,5 +1,10 @@
 package vtquery
 
+import (
+	"fmt"
+	"time"
+)
+
 // Result is common data structure fot HashQueryResult/URLQueryResult
 type Result struct {
 	Data  []interface{} `json:"data"`
@@ -26,8 +31,8 @@ type HashQueryResult struct {
 			FileTypeExtension string `json:"FileTypeExtension"`
 			MIMEType          string `json:"MIMEType"`
 		} `json:"exiftool"`
-		FirstSubmissionDate int                       `json:"first_submission_date"`
-		LastAnalysisDate    int                       `json:"last_analysis_date"`
+		FirstSubmissionDate int64                     `json:"first_submission_date"`
+		LastAnalysisDate    int64                     `json:"last_analysis_date"`
 		LastAnalysisResults map[string]AnalysisResult `json:"last_analysis_results"`
 		LastAnalysisStats   struct {
 			Failure         int `json:"failure"`
@@ -38,7 +43,7 @@ type HashQueryResult struct {
 			TypeUnsupported int `json:"type-unsupported"`
 			Undetected      int `json:"undetected"`
 		} `json:"last_analysis_stats"`
-		LastSubmissionDate int      `json:"last_submission_date"`
+		LastSubmissionDate int64    `json:"last_submission_date"`
 		Magic              string   `json:"magic"`
 		Md5                string   `json:"md5"`
 		Names              []string `json:"names"`
@@ -95,8 +100,8 @@ type URLQueryResult struct {
 		Categories struct {
 			ForcepointThreatSeeker string `json:"Forcepoint ThreatSeeker"`
 		} `json:"categories"`
-		FirstSubmissionDate int                       `json:"first_submission_date"`
-		LastAnalysisDate    int                       `json:"last_analysis_date"`
+		FirstSubmissionDate int64                     `json:"first_submission_date"`
+		LastAnalysisDate    int64                     `json:"last_analysis_date"`
 		LastAnalysisResults map[string]AnalysisResult `json:"last_analysis_results"`
 		LastAnalysisStats   struct {
 			Harmless   int `json:"harmless"`
@@ -106,7 +111,7 @@ type URLQueryResult struct {
 			Undetected int `json:"undetected"`
 		} `json:"last_analysis_stats"`
 		LastFinalURL       string        `json:"last_final_url"`
-		LastSubmissionDate int           `json:"last_submission_date"`
+		LastSubmissionDate int64         `json:"last_submission_date"`
 		Reputation         int           `json:"reputation"`
 		Tags               []interface{} `json:"tags"`
 		TimesSubmitted     int           `json:"times_submitted"`
@@ -143,4 +148,27 @@ type URLQueryResult struct {
 		} `json:"network_location"`
 	} `json:"relationships"`
 	Type string `json:"type"`
+}
+
+// ShowReport print query result to stdout.
+func (hr *HashQueryResult) ShowReport() {
+	fmt.Printf("Name:	%s\n", hr.Attributes.Names[0])
+	fmt.Printf("MD5:	%s\n", hr.Attributes.Md5)
+	fmt.Printf("SHA1:	%s\n", hr.Attributes.Sha1)
+	fmt.Printf("SHA256:	%s\n", hr.Attributes.Sha256)
+	fmt.Printf("Type:	%s\n", hr.Attributes.TypeDescription)
+	fmt.Printf("Size:	%d\n", hr.Attributes.Size)
+	fmt.Printf("FirstSubmit:	%s\n", time.Unix(hr.Attributes.FirstSubmissionDate, 0))
+	fmt.Printf("SubmissionTimes: %d\n", hr.Attributes.TimesSubmitted)
+	fmt.Printf("LastAnalysis:	%s\n", time.Unix(hr.Attributes.LastAnalysisDate, 0))
+	fmt.Printf("Harmless:	%d\n", hr.Attributes.LastAnalysisStats.Harmless)
+	fmt.Printf("Malicious:	%d\n", hr.Attributes.LastAnalysisStats.Malicious)
+	fmt.Printf("Undecided:	%d\n", hr.Attributes.LastAnalysisStats.Undetected)
+	fmt.Printf("Unsupported:	%d\n", hr.Attributes.LastAnalysisStats.TypeUnsupported)
+	fmt.Printf("Detections:\n")
+	for engine, detection := range hr.Attributes.LastAnalysisResults {
+		if detection.Category == "malicious" {
+			fmt.Printf("  %-20s: %s\n", engine, detection.Result)
+		}
+	}
 }
