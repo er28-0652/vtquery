@@ -150,7 +150,11 @@ type URLQueryResult struct {
 	Type string `json:"type"`
 }
 
-// ShowReport print query result to stdout.
+type QueryResult interface {
+	ShowReport()
+}
+
+// ShowReport print query result of file hash to stdout.
 func (hr *HashQueryResult) ShowReport() {
 	fmt.Printf("Name:	%s\n", hr.Attributes.Names[0])
 	fmt.Printf("MD5:	%s\n", hr.Attributes.Md5)
@@ -167,6 +171,23 @@ func (hr *HashQueryResult) ShowReport() {
 	fmt.Printf("Unsupported:	%d\n", hr.Attributes.LastAnalysisStats.TypeUnsupported)
 	fmt.Printf("Detections:\n")
 	for engine, detection := range hr.Attributes.LastAnalysisResults {
+		if detection.Category == "malicious" {
+			fmt.Printf("  %-20s: %s\n", engine, detection.Result)
+		}
+	}
+}
+
+// ShowReport print query result of url to stdout.
+func (ur *URLQueryResult) ShowReport() {
+	fmt.Printf("URL:	%s\n", ur.Attributes.URL)
+	fmt.Printf("FirstSubmit:	%s\n", time.Unix(ur.Attributes.FirstSubmissionDate, 0))
+	fmt.Printf("SubmissionTimes: %d\n", ur.Attributes.TimesSubmitted)
+	fmt.Printf("LastAnalysis:	%s\n", time.Unix(ur.Attributes.LastAnalysisDate, 0))
+	fmt.Printf("Harmless:	%d\n", ur.Attributes.LastAnalysisStats.Harmless)
+	fmt.Printf("Malicious:	%d\n", ur.Attributes.LastAnalysisStats.Malicious)
+	fmt.Printf("Undecided:	%d\n", ur.Attributes.LastAnalysisStats.Undetected)
+	fmt.Printf("Detections:\n")
+	for engine, detection := range ur.Attributes.LastAnalysisResults {
 		if detection.Category == "malicious" {
 			fmt.Printf("  %-20s: %s\n", engine, detection.Result)
 		}
