@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+
+	"github.com/pkg/errors"
 )
 
 // Client is basic client structure for VirusTotal API
@@ -20,7 +22,7 @@ type Client struct {
 func NewClient(baseURL, userAgent string, insecure bool) (*Client, error) {
 	parsedURL, err := url.Parse(baseURL)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "client: fail to parse \"%s\"", baseURL)
 	}
 
 	client := &Client{
@@ -47,15 +49,15 @@ func NewClient(baseURL, userAgent string, insecure bool) (*Client, error) {
 }
 
 // NewDefaultClient creates instance with default URL and User-Agent
-func NewDefaultClient() *Client {
+func NewDefaultClient() (*Client, error) {
 	baseURL := "https://www.virustotal.com"
 	userAgent := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36"
 
 	client, err := NewClient(baseURL, userAgent, false)
 	if err != nil {
-		panic(err)
+		return nil, errors.Wrap(err, "client: fail to create new Client")
 	}
-	return client
+	return client, nil
 }
 
 // RequestOptions is the list of options to pass to the request.
@@ -93,7 +95,7 @@ func (c *Client) newRequest(method, spath string, ro *RequestOptions) (*http.Req
 	// Create Request object
 	req, err := http.NewRequest(method, u.String(), ro.Body)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "client: fail to create new Request")
 	}
 
 	// Add User-Agent to Header
