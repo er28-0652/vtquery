@@ -9,7 +9,6 @@ import (
 )
 
 func decodeBody(resp *http.Response, out interface{}) error {
-	defer resp.Body.Close()
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(out)
 }
@@ -34,6 +33,7 @@ func (c *Client) search(query string, data interface{}) error {
 	if err != nil {
 		return errors.Wrap(err, "fail to send request")
 	}
+	defer res.Body.Close()
 
 	// Check status code
 	if res.StatusCode != http.StatusOK {
