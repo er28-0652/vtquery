@@ -9,13 +9,12 @@ script:
 before_deploy:
   - go get -u github.com/laher/goxc
   - go get -u github.com/tcnksm/ghr
+  - cd vt-cli
+  - goxc -pv=$TRAVIS_TAG
 
 deploy:
   provider: script
-  script:
-    - cd vt-cli
-    - goxc -pv=$TRAVIS_TAG
-    - ghr --username er28-0652 --token $GITHUB_TOKEN --replace --debug $(git tag -l --contains HEAD) dist/
+  script: ghr --username er28-0652 --token $GITHUB_TOKEN --replace --debug $(git tag -l --contains HEAD) dist/
   skip_cleanup: true
   on:
     tags: true
