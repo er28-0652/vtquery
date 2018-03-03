@@ -1,8 +1,19 @@
 language: go
 
 go:
- - 1.9
+  - 1.9
 
 script:
- - go get -t ./...
- - go test -v
+  - go test -v
+
+before_deploy:
+  - go get -u github.com/laher/goxc
+  - go get github.com/tcnksm/ghr
+  - cd vt-cli
+  - goxc -pv=$TRAVIS_TAG
+
+deploy:
+  provider: script
+  script: ghr --username er28-0652 --token $GITHUB_TOKEN --replace --debug $(git tag -l --contains HEAD) dist/
+  on:
+    tags: true
