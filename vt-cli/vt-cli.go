@@ -35,7 +35,7 @@ func query(c *cli.Context) error {
 
 func main() {
 	app := cli.NewApp()
-	app.Version = "1.0.6"
+	app.Version = "1.0.7"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "query, q",
